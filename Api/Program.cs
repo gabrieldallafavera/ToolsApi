@@ -1,6 +1,8 @@
+global using Api.Database;
 global using Api.Models;
 global using Api.Services.Interfaces;
 global using Hangfire;
+global using Microsoft.EntityFrameworkCore;
 global using System.ComponentModel.DataAnnotations;
 using Api;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -11,6 +13,19 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var server = builder.Configuration["DbServer"];
+var user = builder.Configuration["DbUser"];
+var password = builder.Configuration["DbPassword"];
+var database = builder.Configuration["DbDatabase"];
+
+string connectionString = builder.Configuration.GetConnectionString("Connection");
+
+if (!string.IsNullOrEmpty(server) && !string.IsNullOrEmpty(user) && !string.IsNullOrEmpty(password) && !string.IsNullOrEmpty(database))
+{
+    connectionString = $"Server={server}; Initial Catalog={database}; User ID={user}; Password={password}; Persist Security Info=True;";
+}
+
+builder.Services.AddDbContext<Context>(options => options.UseSqlServer(connectionString));
 builder.Services.AddHangfire(x => x.UseSqlServerStorage(builder.Configuration.GetConnectionString("Hangfire")));
 builder.Services.AddHangfireServer();
 builder.Services.AddControllers();

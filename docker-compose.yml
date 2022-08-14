@@ -1,0 +1,35 @@
+version: '3.4'
+name: "tools-api"
+services:
+  mssql-server:
+    container_name: mssql-server
+    image: mcr.microsoft.com/mssql/server
+    environment:
+      TZ: "America/Sao_Paulo"
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "My@P@ss2022W0rd"
+      MSSQL_AGENT_ENABLED: true
+    volumes:
+      - mssql:/var/opt/mssql
+    ports:
+      - "1433:1433"
+    restart: always 
+  api:
+    image: ${DOCKER_REGISTRY-}api
+    build:
+      context: .
+      dockerfile: Api/Dockerfile
+    environment:
+      TZ: "America/Sao_Paulo"
+      DbServer: "mssql-server"
+      DbUser: "SA"
+      DbPassword: "My@P@ss2022W0rd"
+      DbDatabase: "Tools"
+    ports:
+      - "80:80"
+    restart: always
+    depends_on:
+      - mssql-server
+volumes:
+  mssql:
+    name: "mssql"

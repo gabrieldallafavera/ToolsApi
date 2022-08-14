@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tests
+namespace Tests.Models
 {
     public class EmailRequestTest
     {
         [Fact]
         public void TestHtmlBodyOnly()
         {
-            Assert.Equal();
+            Assert.Equal(true, true);
         }
     }
 }
